@@ -1,6 +1,6 @@
 # Semantic Cache
 
-A production-quality Python library providing a semantic caching engine that sits between your application and any LLM provider, reducing API costs and latency by recognizing semantically equivalent prompts.
+Python library for semantic caching of LLM responses using exact matching, vector similarity search, and pluggable provider interfaces.
 
 ## Architecture
 

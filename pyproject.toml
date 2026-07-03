@@ -1,7 +1,7 @@
 [project]
 name = "semantic-cache"
 version = "0.1.0"
-description = "A semantic caching engine for LLMs to reduce API cost and latency"
+description = "Python library for semantic caching of LLM responses using exact matching, vector similarity search, and pluggable provider interfaces."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
