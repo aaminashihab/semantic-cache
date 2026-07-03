@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+*.db
+*.faiss
+.pytest_cache/
+.coverage
+semantic-cache.egg-info/
+benchmark_report.md
