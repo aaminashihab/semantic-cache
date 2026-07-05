@@ -80,7 +80,9 @@ async def generate(prompt: str):
 
 The library comes with a Streamlit dashboard showing Hit Rates, Latency (P50/P95), Tokens Saved, and Estimated $ Saved.
 
-![Dashboard Preview](https://via.placeholder.com/800x400.png?text=Dashboard+Screenshot)
+![Dashboard Metrics](assets/dashboard_matrix.jpeg)
+![Dashboard Charts](assets/dashboard_chart.jpeg)
+![Dashboard Tables](assets/dashboard_table.jpeg)
 
 ```bash
 streamlit run dashboard/app.py
