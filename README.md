@@ -6,15 +6,15 @@ Python library for semantic caching of LLM responses using exact matching, vecto
 
 ```mermaid
 flowchart TD
-    A[User Prompt] --> B{Exact Match Cache<br>(SQLite)}
-    B -- Hit --> H[Return Cached Response]
-    B -- Miss --> C[Generate Embedding<br>gemini-embedding-001]
-    C --> D{Semantic Vector Search<br>(FAISS)}
+    A["User Prompt"] --> B{"Exact Match Cache<br>(SQLite)"}
+    B -- Hit --> H["Return Cached Response"]
+    B -- Miss --> C["Generate Embedding<br>gemini-embedding-001"]
+    C --> D{"Semantic Vector Search<br>(FAISS)"}
     D -- Hit >= Threshold --> H
-    D -- Miss --> E[Call LLM Provider<br>Gemini 2.5 Flash]
-    E --> F[Store Response, Tokens,<br>& Cost in SQLite]
-    F --> G[Store Vector in FAISS]
-    G --> I[Return New Response]
+    D -- Miss --> E["Call LLM Provider<br>Gemini 2.5 Flash"]
+    E --> F["Store Response, Tokens,<br>& Cost in SQLite"]
+    F --> G["Store Vector in FAISS"]
+    G --> I["Return New Response"]
 ```
 
 The caching engine works in multiple layers:
