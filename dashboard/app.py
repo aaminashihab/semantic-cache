@@ -90,7 +90,7 @@ else:
             st.info("No similarity scores recorded yet.")
 
     st.subheader("Recent Requests")
-    st.dataframe(df.head(50), use_container_width=True)
+    st.dataframe(df.drop(columns=['fingerprint'], errors='ignore').head(50), use_container_width=True)
 
     st.subheader("Cache Records Overview")
     st.dataframe(cache_df[['id', 'faiss_id', 'prompt', 'hit_count', 'provider', 'model', 'timestamp']].sort_values(by='hit_count', ascending=False).head(50), use_container_width=True)
