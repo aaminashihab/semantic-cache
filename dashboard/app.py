@@ -8,7 +8,9 @@ st.set_page_config(page_title="Semantic Cache Dashboard", layout="wide")
 st.title("Semantic Cache Dashboard")
 st.markdown("Monitor caching performance, latency, and cost savings.")
 
-DB_PATH = "../semantic_cache.db"
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DB_PATH = os.path.join(BASE_DIR, "semantic_cache.db")
 
 def load_data():
     try:
