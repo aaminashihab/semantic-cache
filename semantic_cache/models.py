@@ -17,6 +17,8 @@ class CacheRecord(BaseModel):
     provider: str
     model: str
     temperature: float
+    tokens_input: int = 0
+    tokens_output: int = 0
     timestamp: datetime = Field(default_factory=datetime.now)
     ttl: int = 0
     hit_count: int = 0

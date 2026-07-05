@@ -1,5 +1,5 @@
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, AsyncMock
 import os
 import asyncio
 from semantic_cache import SemanticCache
@@ -14,6 +14,11 @@ class MockProvider(BaseProvider):
     def count_tokens(self, text): return 10
     async def acount_tokens(self, text): return 10
     def model_name(self): return "mock-model"
+    @property
+    def cost_per_input_token(self): return 0.001
+    
+    @property
+    def cost_per_output_token(self): return 0.002
 
 class MockEmbedding(BaseEmbeddingModel):
     def embed(self, text): return [0.1] * 768
@@ -28,7 +33,7 @@ def mock_cache():
         
     provider = MockProvider()
     provider.generate = MagicMock(return_value="Mocked Response")
-    provider.agenerate = MagicMock(return_value="Mocked Async Response")
+    provider.agenerate = AsyncMock(return_value="Mocked Async Response")
     
     cache = SemanticCache(
         provider=provider,

@@ -17,7 +17,11 @@ def run_benchmark():
         os.remove("semantic_cache.faiss")
 
     cache = SemanticCache(
-        provider=GeminiProvider(model="gemini-2.5-flash"),
+        provider=GeminiProvider(
+            model="gemini-2.5-flash",
+            cost_per_input_token=0.30 / 1_000_000,
+            cost_per_output_token=2.50 / 1_000_000
+        ),
         embedding_model=GeminiEmbedding(),
         similarity_threshold=0.90,
         db_path="semantic_cache.db",
@@ -76,7 +80,7 @@ def run_benchmark():
     sim_scores = [r['similarity'] for r in results if r['similarity'] > 0]
     avg_similarity = np.mean(sim_scores) if sim_scores else 0.0
 
-    report = f\"\"\"# Benchmark Report
+    report = f"""# Benchmark Report
 
 ## Summary
 - **Total Requests**: {total_req}
@@ -97,7 +101,7 @@ def run_benchmark():
 ## Details
 | Request | Prompt | Source | Latency (ms) | Similarity |
 |---|---|---|---|---|
-\"\"\"
+"""
     for i, r in enumerate(results):
         report += f"| {i+1} | {r['prompt']} | {r['source']} | {r['latency']:.1f} | {r['similarity']:.4f} |\n"
 

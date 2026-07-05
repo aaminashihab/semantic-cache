@@ -10,7 +10,7 @@ class CacheDB:
 
     def _init_db(self):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(\"\"\"
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS cache_records (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     faiss_id INTEGER,
@@ -20,18 +20,20 @@ class CacheDB:
                     provider TEXT NOT NULL,
                     model TEXT NOT NULL,
                     temperature REAL,
+                    tokens_input INTEGER DEFAULT 0,
+                    tokens_output INTEGER DEFAULT 0,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
                     ttl INTEGER DEFAULT 0,
                     hit_count INTEGER DEFAULT 0,
                     last_accessed DATETIME DEFAULT CURRENT_TIMESTAMP
                 )
-            \"\"\")
-            conn.execute(\"\"\"
+            """)
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_fingerprint ON cache_records(fingerprint)
-            \"\"\")
-            conn.execute(\"\"\"
+            """)
+            conn.execute("""
                 CREATE INDEX IF NOT EXISTS idx_faiss_id ON cache_records(faiss_id)
-            \"\"\")
+            """)
 
     def _is_expired(self, timestamp_str: str, ttl_days: int) -> bool:
         if ttl_days <= 0:
@@ -70,29 +72,31 @@ class CacheDB:
     def store(self, record: CacheRecord) -> int:
         with sqlite3.connect(self.db_path) as conn:
             cursor = conn.cursor()
-            cursor.execute(\"\"\"
+            cursor.execute("""
                 INSERT INTO cache_records (
-                    faiss_id, prompt, fingerprint, response, provider, model, temperature, ttl
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            \"\"\", (
+                    faiss_id, prompt, fingerprint, response, provider, model, temperature, 
+                    tokens_input, tokens_output, ttl
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (
                 record.faiss_id, record.prompt, record.fingerprint, record.response,
-                record.provider, record.model, record.temperature, record.ttl
+                record.provider, record.model, record.temperature, 
+                record.tokens_input, record.tokens_output, record.ttl
             ))
             return cursor.lastrowid
 
     def update_faiss_id(self, record_id: int, faiss_id: int):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(\"\"\"
+            conn.execute("""
                 UPDATE cache_records SET faiss_id = ? WHERE id = ?
-            \"\"\", (faiss_id, record_id))
+            """, (faiss_id, record_id))
 
     def update_hit(self, record_id: int):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(\"\"\"
+            conn.execute("""
                 UPDATE cache_records 
                 SET hit_count = hit_count + 1, last_accessed = CURRENT_TIMESTAMP
                 WHERE id = ?
-            \"\"\", (record_id,))
+            """, (record_id,))
             
     def delete(self, record_id: int):
         with sqlite3.connect(self.db_path) as conn:

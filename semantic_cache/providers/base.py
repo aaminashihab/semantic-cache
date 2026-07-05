@@ -20,3 +20,13 @@ class BaseProvider(ABC):
     @abstractmethod
     def model_name(self) -> str:
         pass
+        
+    @property
+    @abstractmethod
+    def cost_per_input_token(self) -> float:
+        pass
+
+    @property
+    @abstractmethod
+    def cost_per_output_token(self) -> float:
+        pass

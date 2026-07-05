@@ -125,19 +125,24 @@ class SemanticCache:
                     
                     # 7. Store Cache & Vector
                     t0 = time.time()
-                    new_faiss_id = self.vector_store.next_id()
+                    
                     new_record = CacheRecord(
-                        faiss_id=new_faiss_id,
+                        faiss_id=None, # Will update after insert
                         prompt=prompt,
                         fingerprint=prompt_fp,
                         response=response_text,
                         provider=self.provider.model_name(),
                         model=self.provider.model_name(),
                         temperature=temperature,
+                        tokens_input=tokens_in,
+                        tokens_output=tokens_out,
                         ttl=self.config.ttl_days
                     )
                     record_id = self.db.store(new_record)
-                    self.vector_store.add(query_embedding, new_faiss_id)
+                    
+                    # Update faiss mapping
+                    self.db.update_faiss_id(record_id, record_id)
+                    self.vector_store.add(query_embedding, record_id)
                     self.vector_store.save()
                     latencies['write'] = (time.time() - t0) * 1000
                     
@@ -147,11 +152,10 @@ class SemanticCache:
             
             # Reconstruct tokens for hits to calculate savings
             if exact_hit or semantic_hit:
-                # Approximate tokens saved based on current prompt and cached response
-                tokens_in = self.provider.count_tokens(prompt)
-                tokens_out = self.provider.count_tokens(response_text)
+                tokens_in = record.tokens_input if record else 0
+                tokens_out = record.tokens_output if record else 0
                 tokens_saved = tokens_in + tokens_out
-                cost_saved = tokens_saved * 0.000001
+                cost_saved = (tokens_in * self.provider.cost_per_input_token) + (tokens_out * self.provider.cost_per_output_token)
                 tokens_saved_counter.add(tokens_saved)
                 cost_saved_counter.add(cost_saved)
 
@@ -241,19 +245,21 @@ class SemanticCache:
                     tokens_in, tokens_out = await asyncio.gather(t_in, t_out)
                     
                     t0 = time.time()
-                    new_faiss_id = self.vector_store.next_id()
                     new_record = CacheRecord(
-                        faiss_id=new_faiss_id,
+                        faiss_id=None,
                         prompt=prompt,
                         fingerprint=prompt_fp,
                         response=response_text,
                         provider=self.provider.model_name(),
                         model=self.provider.model_name(),
                         temperature=temperature,
+                        tokens_input=tokens_in,
+                        tokens_output=tokens_out,
                         ttl=self.config.ttl_days
                     )
                     record_id = await asyncio.to_thread(self.db.store, new_record)
-                    await asyncio.to_thread(self.vector_store.add, query_embedding, new_faiss_id)
+                    await asyncio.to_thread(self.db.update_faiss_id, record_id, record_id)
+                    await asyncio.to_thread(self.vector_store.add, query_embedding, record_id)
                     await asyncio.to_thread(self.vector_store.save)
                     latencies['write'] = (time.time() - t0) * 1000
                     
@@ -262,11 +268,10 @@ class SemanticCache:
             total_latency = (time.time() - total_start) * 1000
             
             if exact_hit or semantic_hit:
-                t_in = asyncio.create_task(self.provider.acount_tokens(prompt))
-                t_out = asyncio.create_task(self.provider.acount_tokens(response_text))
-                tokens_in, tokens_out = await asyncio.gather(t_in, t_out)
+                tokens_in = record.tokens_input if record else 0
+                tokens_out = record.tokens_output if record else 0
                 tokens_saved = tokens_in + tokens_out
-                cost_saved = tokens_saved * 0.000001
+                cost_saved = (tokens_in * self.provider.cost_per_input_token) + (tokens_out * self.provider.cost_per_output_token)
                 tokens_saved_counter.add(tokens_saved)
                 cost_saved_counter.add(cost_saved)
 

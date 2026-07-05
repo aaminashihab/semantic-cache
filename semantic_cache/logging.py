@@ -8,7 +8,7 @@ class RequestLogger:
 
     def _init_db(self):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(\"\"\"
+            conn.execute("""
                 CREATE TABLE IF NOT EXISTS request_logs (
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
@@ -26,18 +26,18 @@ class RequestLogger:
                     estimated_cost_saved REAL,
                     response_source TEXT
                 )
-            \"\"\")
+            """)
 
     def log(self, record: RequestRecord):
         with sqlite3.connect(self.db_path) as conn:
-            conn.execute(\"\"\"
+            conn.execute("""
                 INSERT INTO request_logs (
                     prompt, fingerprint, exact_hit, semantic_hit, similarity, 
                     latency_ms, provider_latency_ms, embedding_latency_ms,
                     tokens_input, tokens_output, tokens_saved, estimated_cost_saved,
                     response_source
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-            \"\"\", (
+            """, (
                 record.prompt, record.fingerprint, record.exact_hit, record.semantic_hit,
                 record.similarity, record.latency_ms, record.provider_latency_ms,
                 record.embedding_latency_ms, record.tokens_input, record.tokens_output,

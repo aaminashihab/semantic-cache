@@ -39,14 +39,6 @@ class VectorStore:
         id_array = np.array(ids, dtype=np.int64)
         self.index.remove_ids(id_array)
 
-    def next_id(self) -> int:
-        # Just use a simple incrementing counter based on current size, 
-        # or simply max ID + 1. But since we delete, max ID + 1 is safer.
-        # However, IndexIDMap doesn't expose max ID easily, so we maintain it or generate random int64.
-        # Actually, simpler is to use a timestamp-based ID or uuid-based int64.
-        import time
-        return int(time.time() * 1000000) % (2**63 - 1)
-
     def save(self):
         faiss.write_index(self.index, self.index_path)
 

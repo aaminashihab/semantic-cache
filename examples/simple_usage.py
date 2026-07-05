@@ -16,7 +16,11 @@ async def main():
 
     # Initialize cache using Dependency Injection
     cache = SemanticCache(
-        provider=GeminiProvider(model="gemini-2.5-flash"),
+        provider=GeminiProvider(
+            model="gemini-2.5-flash",
+            cost_per_input_token=0.30 / 1_000_000,
+            cost_per_output_token=2.50 / 1_000_000
+        ),
         embedding_model=GeminiEmbedding(),
         similarity_threshold=0.92,
         ttl_days=30,

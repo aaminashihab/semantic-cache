@@ -1,14 +1,32 @@
-from .base import BaseProvider
+import os
 import asyncio
+import logging
+from typing import Optional
+from .base import BaseProvider
+
+logger = logging.getLogger(__name__)
 
 class GeminiProvider(BaseProvider):
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(
+        self, 
+        model: str = "gemini-2.5-flash", 
+        api_key: Optional[str] = None,
+        cost_per_input_token: float = 0.0,
+        cost_per_output_token: float = 0.0
+    ):
         try:
             from google import genai
-            self.client = genai.Client()
+            key = api_key or os.environ.get("GEMINI_API_KEY")
+            self.client = genai.Client(api_key=key)
         except ImportError:
             raise ImportError("Please install google-genai to use Gemini provider")
+            
         self._model = model
+        self._cost_in = cost_per_input_token
+        self._cost_out = cost_per_output_token
+        
+        if self._cost_in == 0.0 and self._cost_out == 0.0:
+            logger.warning("GeminiProvider initialized with 0.0 cost rates. Savings will report as $0.")
 
     def generate(self, prompt: str, temperature: float = 0.7) -> str:
         from google.genai import types
@@ -53,3 +71,11 @@ class GeminiProvider(BaseProvider):
 
     def model_name(self) -> str:
         return self._model
+        
+    @property
+    def cost_per_input_token(self) -> float:
+        return self._cost_in
+
+    @property
+    def cost_per_output_token(self) -> float:
+        return self._cost_out

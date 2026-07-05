@@ -54,7 +54,12 @@ else:
     st.subheader("Savings & Latency")
     col6, col7, col8, col9, col10 = st.columns(5)
     col6.metric("Total Tokens Saved", f"{tokens_saved:,}")
-    col7.metric("Estimated $ Saved", f"${cost_saved:.4f}")
+    
+    if tokens_saved > 0 and cost_saved == 0.0:
+        col7.metric("Estimated $ Saved", "$0.00 (unconfigured)")
+    else:
+        col7.metric("Estimated $ Saved", f"${cost_saved:.4f}")
+        
     col8.metric("Avg Latency", f"{avg_latency:.1f} ms")
     col9.metric("P50 Latency", f"{p50_latency:.1f} ms")
     col10.metric("P95 Latency", f"{p95_latency:.1f} ms")
