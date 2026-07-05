@@ -38,7 +38,7 @@ class SemanticCache:
             self.provider = provider
             
         if embedding_model is None:
-            if self.config.embedding_model == "text-embedding-004":
+            if self.config.embedding_model == "gemini-embedding-001":
                 from .embeddings import GeminiEmbedding
                 self.embedding_model = GeminiEmbedding(model_name=self.config.embedding_model)
             else:

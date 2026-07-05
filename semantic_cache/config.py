@@ -8,7 +8,7 @@ class CacheConfig(BaseModel):
     db_path: str = "semantic_cache.db"
     index_path: str = "semantic_cache.faiss"
     vector_dim: int = 768
-    embedding_model: str = "text-embedding-004"
+    embedding_model: str = "gemini-embedding-001"
     enable_metrics: bool = True
     log_requests: bool = True
     ttl_days: int = 30

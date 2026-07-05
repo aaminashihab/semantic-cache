@@ -12,7 +12,7 @@ class BaseEmbeddingModel(ABC):
         pass
 
 class GeminiEmbedding(BaseEmbeddingModel):
-    def __init__(self, model_name: str = "text-embedding-004"):
+    def __init__(self, model_name: str = "gemini-embedding-001"):
         try:
             from google import genai
             self.client = genai.Client()
@@ -23,13 +23,15 @@ class GeminiEmbedding(BaseEmbeddingModel):
     def embed(self, text: str) -> List[float]:
         response = self.client.models.embed_content(
             model=self.model_name,
-            contents=text
+            contents=text,
+            config={"output_dimensionality": 768}
         )
         return response.embeddings[0].values
 
     async def aembed(self, text: str) -> List[float]:
         response = await self.client.aio.models.embed_content(
             model=self.model_name,
-            contents=text
+            contents=text,
+            config={"output_dimensionality": 768}
         )
         return response.embeddings[0].values
