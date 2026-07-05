@@ -6,3 +6,11 @@ __pycache__/
 .coverage
 semantic-cache.egg-info/
 benchmark_report.md
+
+# Sensitive Data
+.env
+.env.*
+*.pem
+*.key
+credentials.json
+client_secret.json
