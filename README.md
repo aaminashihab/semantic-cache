@@ -4,7 +4,18 @@ Python library for semantic caching of LLM responses using exact matching, vecto
 
 ## Architecture
 
-![Architecture](https://via.placeholder.com/800x400.png?text=Semantic+Cache+Architecture)
+```mermaid
+flowchart TD
+    A[User Prompt] --> B{Exact Match Cache<br>(SQLite)}
+    B -- Hit --> H[Return Cached Response]
+    B -- Miss --> C[Generate Embedding<br>gemini-embedding-001]
+    C --> D{Semantic Vector Search<br>(FAISS)}
+    D -- Hit >= Threshold --> H
+    D -- Miss --> E[Call LLM Provider<br>Gemini 2.5 Flash]
+    E --> F[Store Response, Tokens,<br>& Cost in SQLite]
+    F --> G[Store Vector in FAISS]
+    G --> I[Return New Response]
+```
 
 The caching engine works in multiple layers:
 1. **Exact Cache**: Normalizes the prompt (whitespace collapse, unicode normalization) and uses SHA-256 fingerprinting for O(1) lookups.
