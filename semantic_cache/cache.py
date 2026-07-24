@@ -39,7 +39,9 @@ class CacheDB:
         if ttl_days <= 0:
             return False
         timestamp = datetime.strptime(timestamp_str, "%Y-%m-%d %H:%M:%S")
-        return datetime.now() - timestamp > timedelta(days=ttl_days)
+        from datetime import timezone
+        now_utc_naive = datetime.now(timezone.utc).replace(tzinfo=None)
+        return now_utc_naive - timestamp > timedelta(days=ttl_days)
 
     def lookup_by_fingerprint(self, fingerprint: str, ttl_days: int = 0) -> Optional[CacheRecord]:
         with sqlite3.connect(self.db_path) as conn:
