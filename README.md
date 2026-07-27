@@ -1,6 +1,5 @@
 # Semantic Cache
-
-Python library for semantic caching of LLM responses using exact matching, vector similarity search, and pluggable provider interfaces.
+ Smantic caching of LLM responses using exact matching, vector similarity search, and pluggable provider interfaces.
 
 ## Architecture
 
@@ -22,11 +21,6 @@ The caching engine works in multiple layers:
 2. **Semantic Cache**: If exact match fails, generates an embedding and searches a FAISS vector store. If a similar prompt exists above the `similarity_threshold`, returns the cached response.
 3. **Provider**: If both caches miss, calls the underlying LLM provider, stores the response, and logs the metrics.
 
-## Installation
-
-```bash
-pip install semantic-cache
-```
 
 ## Quick Start (Dependency Injection)
 
